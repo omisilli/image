@@ -102,6 +102,10 @@
             section > p + p {
                 margin-top: 0.5rem;
             }
+            /* Text that follows a slider, a panel or an image. */
+            section > :is(.grid, .slider, details, .wide) + p {
+                margin-top: 1.25rem;
+            }
             .grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
@@ -242,7 +246,7 @@
                         <div class="box" data-pg-image-frame>
                             <img data-pg-image src="images/horse-05.jpg" width="800" height="533" alt="" />
                         </div>
-                        <figcaption>Not set · at once</figcaption>
+                        <figcaption>Framed, not set · at once, like YouTube · recommended</figcaption>
                     </figure>
                     <figure>
                         <div class="box" data-pg-image-frame>

@@ -107,6 +107,7 @@ npx -p typescript tsc index.ts --outDir dist --declaration --target es2020 --mod
 
 No fade unless an image asks for one. Without the attribute a framed image
 is hidden until loaded, then shown at once — as YouTube's thumbnails do:
+framed, the grey on the box around the image, no fade.
 
 ```html
 <div data-pg-image-frame><img data-pg-image …></div>                          <!-- at once -->
@@ -114,7 +115,10 @@ is hidden until loaded, then shown at once — as YouTube's thumbnails do:
 <div data-pg-image-frame><img data-pg-image data-pg-image-fade="1200" …></div> <!-- 1200ms -->
 ```
 
-In JSX a bare attribute is `data-pg-image-fade=""`.
+Leaving it out is the recommended choice: the image is on screen the
+moment it is loaded, and the browser's speed measure for the page's
+largest image (LCP) does not wait for a fade. In JSX a bare attribute is
+`data-pg-image-fade=""`.
 
 Style anything on the state — a caption over failed images, say:
 
