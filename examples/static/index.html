@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>image — example</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.0.0/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/index.css" />
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -81,6 +81,9 @@
                 margin: 0 auto;
                 padding: 3rem 1rem 6rem;
                 display: grid;
+                /* minmax(0, …): a grid column otherwise grows to its widest
+                   content — the slider — and the whole page scrolls sideways. */
+                grid-template-columns: minmax(0, 1fr);
                 gap: 3.5rem;
             }
             h1 {
@@ -225,6 +228,37 @@
             </section>
 
             <section>
+                <h2>Fade, per image</h2>
+                <p>
+                    <code>data-pg-image-fade</code> on the image, in milliseconds.
+                    <code>0</code> shows it at once when loaded, as YouTube's thumbnails do;
+                    without it the page's <code>--pg-image-fade</code> applies, 400ms unless
+                    set.
+                </p>
+                <button type="button" id="replay">Load them again</button>
+                <div class="grid" id="fades">
+                    <figure>
+                        <div class="box" data-pg-image-frame>
+                            <img data-pg-image data-pg-image-fade="0" src="images/horse-05.jpg" width="800" height="533" alt="" />
+                        </div>
+                        <figcaption><code>0</code> · at once</figcaption>
+                    </figure>
+                    <figure>
+                        <div class="box" data-pg-image-frame>
+                            <img data-pg-image src="images/horse-06.jpg" width="800" height="533" alt="" />
+                        </div>
+                        <figcaption>None set · 400ms</figcaption>
+                    </figure>
+                    <figure>
+                        <div class="box" data-pg-image-frame>
+                            <img data-pg-image data-pg-image-fade="1200" src="images/horse-07.jpg" width="800" height="533" alt="" />
+                        </div>
+                        <figcaption><code>1200</code> · slow</figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <section>
                 <h2>Added later</h2>
                 <p>
                     One listener on <code>document</code> sees every image — also the ones a
@@ -354,9 +388,19 @@
         </main>
 
         <script type="module">
-            import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.0.0/dist/index.js";
+            import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/dist/index.js";
 
             initImage();
+
+            // Fresh copies of the three, so each fades in again.
+            document.getElementById("replay").addEventListener("click", () => {
+                document.querySelectorAll("#fades img").forEach((img) => {
+                    const copy = img.cloneNode();
+                    copy.removeAttribute("data-pg-image-state");
+                    copy.removeAttribute("style");
+                    img.replaceWith(copy);
+                });
+            });
 
             // Images put on the page afterwards are seen by the same listener.
             const added = document.getElementById("added");

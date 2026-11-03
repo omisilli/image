@@ -12,7 +12,7 @@ it fails. One script, one stylesheet, no dependencies, framework-agnostic.
 ```
 
 ```sh
-npm install github:omisilli/image#v1.0.0
+npm install github:omisilli/image#v1.1.0
 ```
 
 ```ts
@@ -34,16 +34,16 @@ Load both halves straight from jsDelivr — no install, and the page works
 when opened by double-clicking:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.0.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/index.css" />
 
 <script type="module">
-    import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.0.0/dist/index.js";
+    import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/dist/index.js";
 
     initImage();
 </script>
 ```
 
-Pin the version (`@v1.0.0`) on a live site. A pinned URL never changes;
+Pin the version (`@v1.1.0`) on a live site. A pinned URL never changes;
 `@1` follows the newest 1.x release.
 
 ## Who does what
@@ -103,6 +103,15 @@ npx -p typescript tsc index.ts --outDir dist --declaration --target es2020 --mod
 | `data-pg-image-frame`  | a wrapper          | Carries the grey; the image inside fades in over it            |
 | `data-pg-image-state`  | `<img>`            | `"loaded"` or `"error"`, written by image. None yet: loading   |
 | `data-pg-image-src`    | `<img>`            | On error: the address it tried, written by image               |
+| `data-pg-image-fade`   | `<img>`            | This image's fade, in ms. `0`: at once. Optional               |
+
+Each image can fade at its own pace — or not at all, as YouTube's
+thumbnails do: hidden until loaded, then shown at once.
+
+```html
+<div data-pg-image-frame><img data-pg-image data-pg-image-fade="0" …></div>
+<div data-pg-image-frame><img data-pg-image data-pg-image-fade="1200" …></div>
+```
 
 Style anything on the state — a caption over failed images, say:
 
@@ -141,7 +150,11 @@ fade. With reduced motion asked for, framed images appear without fading.
 | `--pg-image-placeholder` | `rgb(127 127 127 / 0.15)`   | The ground — suits light and dark themes   |
 | `--pg-image-fade`        | `400ms`                     | How long a framed image takes; `0s` for none |
 
-Set them anywhere above the image. The ground is not the text colour on
+Set them anywhere above the image — on `:root` for the whole site, on a
+section for its images. `data-pg-image-fade` on an image wins over
+`--pg-image-fade`.
+
+The ground is not the text colour on
 purpose: an image's colour is made transparent to hide its alt text, and a
 share of transparent is transparent.
 

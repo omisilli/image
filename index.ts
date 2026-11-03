@@ -13,6 +13,8 @@
  * ground stay and the browser draws no broken-image icon or alt text. The
  * address it tried is kept in data-pg-image-src.
  *
+ * data-pg-image-fade="0" on an image sets its own fade, in ms — 0 for none.
+ *
  * Lazy loading, sizes, formats: not here. The browser (loading="lazy",
  * srcset, <picture>) or next/image does those.
  *
@@ -24,6 +26,7 @@
 const ATTR = "data-pg-image";
 const STATE = "data-pg-image-state";
 const SRC = "data-pg-image-src";
+const FADE = "data-pg-image-fade";
 
 /* A transparent 1×1 GIF: the stand-in for an image that failed. */
 const EMPTY = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -39,6 +42,10 @@ function isStandIn(img: HTMLImageElement): boolean {
 function markLoaded(img: HTMLImageElement): void {
     // The stand-in loading is not the image loading.
     if (isStandIn(img)) return;
+    // Read here, not at start: it covers images added later too, and the
+    // duration is in place in the same step the fade begins.
+    const fade = img.getAttribute(FADE);
+    if (fade) img.style.setProperty("--pg-image-fade", `${fade}ms`);
     img.setAttribute(STATE, "loaded");
 }
 
