@@ -1,0 +1,44 @@
+/*
+ * image — the CSS half: a grey ground until the image is there, a fade-in
+ * inside a frame, and the grey kept when it fails.
+ *
+ * Variables, set anywhere above the image:
+ *   --pg-image-placeholder   the ground. Default: a half-tone grey at 15%
+ *                            opacity, so it suits a light and a dark theme
+ *                            alike. Not the text colour: an image's own
+ *                            colour is made transparent to hide its alt
+ *                            text (next/image does that, and so do resets),
+ *                            and a share of transparent is transparent.
+ *   --pg-image-fade          how long a framed image takes to appear.
+ *                            Default 400ms; 0s for none.
+ *
+ * Give the image its size — width/height attributes, or aspect-ratio — so
+ * the box, and its ground, are there before the file is.
+ */
+
+/* Not loaded yet, or failed (the empty stand-in shows the ground through). */
+[data-pg-image]:not([data-pg-image-state="loaded"]) {
+    background-color: var(--pg-image-placeholder, rgb(127 127 127 / 0.15));
+}
+
+/* A frame carries the ground itself, so the image can fade in over it. */
+[data-pg-image-frame] {
+    background-color: var(--pg-image-placeholder, rgb(127 127 127 / 0.15));
+}
+
+[data-pg-image-frame] [data-pg-image] {
+    background-color: transparent;
+}
+
+/* Hidden until loaded only when JS can say it loaded, and faded only for
+   users who have not asked for less motion. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-pg-image-frame] [data-pg-image] {
+        opacity: 0;
+        transition: opacity var(--pg-image-fade, 400ms) ease;
+    }
+
+    [data-pg-image-frame] [data-pg-image-state="loaded"] {
+        opacity: 1;
+    }
+}

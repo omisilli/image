@@ -1,0 +1,376 @@
+<!doctype html>
+<!-- Open by double-clicking: both halves load from jsDelivr, not from ../..
+     Pinned to this release, so the page and the code always match. -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>image — example</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.0.0/index.css" />
+        <style>
+            :root {
+                --bg: #f6f6f4;
+                --surface: #ffffff;
+                --fg: #18181b;
+                --muted: #6b6b72;
+                --line: #e4e4e0;
+                --hover: #f0f0ec;
+                --accent: #2f5bea;
+                color-scheme: light dark;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #111113;
+                    --surface: #1b1b1f;
+                    --fg: #ededef;
+                    --muted: #9a9aa3;
+                    --line: #2c2c31;
+                    --hover: #26262b;
+                    --accent: #7c9cff;
+                }
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+            }
+            body {
+                font:
+                    16px/1.6 system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+                color: var(--fg);
+                background: var(--bg);
+            }
+            code {
+                font:
+                    0.85em/1.4 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    monospace;
+                background: var(--hover);
+                padding: 0.15em 0.4em;
+                border-radius: 0.35em;
+            }
+            img {
+                display: block;
+                max-width: 100%;
+                height: auto;
+                /* Hides the alt text while an image loads. */
+                color: transparent;
+            }
+
+            /* --- The box: what padding-bottom: 56.25% used to do. The frame
+                   keeps its ratio, the image fills it and is cropped to fit. --- */
+            .box {
+                aspect-ratio: 3 / 2;
+                overflow: hidden;
+                border-radius: 0.7rem;
+            }
+            .box img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            /* --- Page --- */
+            main {
+                max-width: 64rem;
+                margin: 0 auto;
+                padding: 3rem 1rem 6rem;
+                display: grid;
+                gap: 3.5rem;
+            }
+            h1 {
+                font-size: 1.75rem;
+                line-height: 1.2;
+            }
+            h2 {
+                font-size: 1.1rem;
+                margin-bottom: 0.4rem;
+            }
+            section > p,
+            header > p {
+                color: var(--muted);
+                max-width: 44rem;
+            }
+            section > p + p {
+                margin-top: 0.5rem;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+                gap: 1rem;
+                margin-top: 1.25rem;
+            }
+            figure {
+                display: grid;
+                gap: 0.4rem;
+            }
+            figcaption {
+                font-size: 0.85rem;
+                color: var(--muted);
+            }
+            figcaption b {
+                color: var(--fg);
+                font-weight: 600;
+            }
+            .slider {
+                display: flex;
+                gap: 1rem;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                margin-top: 1.25rem;
+            }
+            .slider .box {
+                flex: none;
+                width: 16rem;
+            }
+            details {
+                margin-top: 1.25rem;
+                padding: 1rem;
+                border: 1px solid var(--line);
+                border-radius: 0.7rem;
+                background: var(--surface);
+            }
+            summary {
+                cursor: pointer;
+            }
+            details .box {
+                margin-top: 1rem;
+                max-width: 28rem;
+            }
+            button {
+                font: inherit;
+                color: inherit;
+                cursor: pointer;
+                padding: 0.5rem 0.9rem;
+                border: 1px solid var(--line);
+                border-radius: 0.6rem;
+                background: var(--surface);
+                margin-top: 1.25rem;
+            }
+            .wide {
+                margin-top: 1.25rem;
+                max-width: 40rem;
+            }
+            .wide img {
+                width: 100%;
+                border-radius: 0.7rem;
+            }
+            .spacer {
+                height: 120vh;
+                display: grid;
+                place-items: center;
+                color: var(--muted);
+                border: 1px dashed var(--line);
+                border-radius: 0.7rem;
+            }
+            ul {
+                color: var(--muted);
+                padding-left: 1.2rem;
+                display: grid;
+                gap: 0.4rem;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>image</h1>
+                <p>
+                    A grey ground until the image is there, a fade-in inside a frame, and no
+                    broken-image icon when it fails. Loading, sizes and formats stay the
+                    browser's: everything below is plain <code>&lt;img&gt;</code> and
+                    <code>&lt;picture&gt;</code>.
+                </p>
+            </header>
+
+            <section>
+                <h2>Framed and not</h2>
+                <p>
+                    In a <code>data-pg-image-frame</code> the grey sits on the frame and the
+                    image fades in over it. Without one the grey sits on the image itself, and
+                    the image appears at once. A failed one keeps its box and its grey; the
+                    address it tried is in <code>data-pg-image-src</code>.
+                </p>
+                <div class="grid">
+                    <figure>
+                        <div class="box" data-pg-image-frame>
+                            <img data-pg-image src="images/horse-01.jpg" width="800" height="533" alt="A white horse running" />
+                        </div>
+                        <figcaption><b>Framed</b> · fades in</figcaption>
+                    </figure>
+                    <figure>
+                        <div class="box">
+                            <img data-pg-image src="images/horse-02.jpg" width="800" height="533" alt="A horse under a cloudy sky" />
+                        </div>
+                        <figcaption><b>No frame</b> · appears at once</figcaption>
+                    </figure>
+                    <figure>
+                        <div class="box" data-pg-image-frame>
+                            <img data-pg-image src="images/missing.jpg" width="800" height="533" alt="A file that is not there" />
+                        </div>
+                        <figcaption><b>Framed</b> · missing file</figcaption>
+                    </figure>
+                    <figure>
+                        <div class="box">
+                            <img data-pg-image src="https://example.invalid/horse.jpg" width="800" height="533" alt="An address that does not resolve" />
+                        </div>
+                        <figcaption><b>No frame</b> · broken address</figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <section>
+                <h2>Added later</h2>
+                <p>
+                    One listener on <code>document</code> sees every image — also the ones a
+                    script puts on the page afterwards. There is nothing to call again.
+                </p>
+                <button type="button" id="add">Add an image</button>
+                <div class="grid" id="added"></div>
+            </section>
+
+            <section>
+                <h2>srcset — the right size for the screen</h2>
+                <p>
+                    Three files, 500, 1000 and 1500 pixels wide; the number is printed on
+                    each. <code>sizes</code> says how wide the image is drawn, and the browser
+                    picks the smallest file that is sharp enough for that width and the
+                    screen's pixel density. Narrow the window, or open it on a phone, and
+                    reload.
+                </p>
+                <div class="wide" data-pg-image-frame>
+                    <img
+                        data-pg-image
+                        src="images/dinosaur-1000.jpg"
+                        srcset="
+                            images/dinosaur-500.jpg   500w,
+                            images/dinosaur-1000.jpg 1000w,
+                            images/dinosaur-1500.jpg 1500w
+                        "
+                        sizes="(width >= 42rem) 40rem, calc(100vw - 2rem)"
+                        width="1500"
+                        height="1000"
+                        alt="A dinosaur skeleton with its width printed on it"
+                    />
+                </div>
+            </section>
+
+            <section>
+                <h2>&lt;picture&gt; — a different image per screen</h2>
+                <p>
+                    Wide screens get the city, middling ones the snake, phones the dinosaur.
+                    When the shape changes with the screen, give each
+                    <code>&lt;source&gt;</code> its own <code>width</code> and
+                    <code>height</code> too, or the page jumps as the image arrives. The image
+                    attributes go on the <code>&lt;img&gt;</code>.
+                </p>
+                <div class="wide" data-pg-image-frame>
+                    <picture>
+                        <source media="(width >= 48rem)" srcset="images/city-1000.jpg" width="1000" height="700" />
+                        <source media="(width >= 36rem)" srcset="images/snake-1000.jpg" width="1000" height="667" />
+                        <img data-pg-image src="images/dinosaur-500.jpg" width="500" height="334" alt="A city, a snake or a dinosaur, by screen width" />
+                    </picture>
+                </div>
+                <p>
+                    A <code>&lt;source&gt;</code> that fails: the browser does not fall back to
+                    the <code>&lt;img&gt;</code>'s own <code>src</code>, so image clears the
+                    sources and the grey stays, as with a plain image.
+                </p>
+                <div class="wide" data-pg-image-frame>
+                    <picture>
+                        <source srcset="images/missing.webp" type="image/webp" />
+                        <img data-pg-image src="images/missing.jpg" width="1000" height="667" alt="A picture whose files are not there" />
+                    </picture>
+                </div>
+            </section>
+
+            <section>
+                <h2>Lazy loading — the browser's own</h2>
+                <p>
+                    <code>loading="lazy"</code> waits until an image is near the screen. In a
+                    sideways slider the far ones wait until scrolled near — the browser looks
+                    well ahead, so on a wide screen most load at once.
+                </p>
+                <div class="slider">
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-03.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-04.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-05.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-06.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-07.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-08.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-09.jpg" width="800" height="533" alt="" /></div>
+                    <div class="box" data-pg-image-frame><img data-pg-image loading="lazy" src="images/horse-10.jpg" width="800" height="533" alt="" /></div>
+                </div>
+                <p>
+                    Inside something closed it waits until that opens — the old
+                    "click to load", with no script.
+                </p>
+                <details>
+                    <summary>Open to load the image</summary>
+                    <div class="box" data-pg-image-frame>
+                        <img data-pg-image loading="lazy" src="images/horse-11.jpg" width="800" height="533" alt="A white horse lying in the grass" />
+                    </div>
+                </details>
+                <p>
+                    And far down the page, it waits for the scroll. An image hidden with
+                    <code>display: none</code> — say, on wide screens only — is not fetched at
+                    all while hidden.
+                </p>
+            </section>
+
+            <div class="spacer">↓ keep scrolling</div>
+
+            <section>
+                <h2>Below the fold</h2>
+                <div class="grid">
+                    <figure>
+                        <div class="box" data-pg-image-frame>
+                            <img data-pg-image loading="lazy" src="images/horse-12.jpg" width="800" height="533" alt="Two horses in a field at sunset" />
+                        </div>
+                        <figcaption>Fetched only now</figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <section>
+                <h2>Also</h2>
+                <ul>
+                    <li>
+                        Without JavaScript nothing is hidden: images show as they arrive, with
+                        no fade.
+                    </li>
+                    <li>With reduced motion asked for, framed images appear without fading.</li>
+                    <li>
+                        Smooth-scrolling libraries that move the real page (Lenis) work as they
+                        are: lazy loading follows the real scroll position.
+                    </li>
+                </ul>
+            </section>
+        </main>
+
+        <script type="module">
+            import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.0.0/dist/index.js";
+
+            initImage();
+
+            // Images put on the page afterwards are seen by the same listener.
+            const added = document.getElementById("added");
+            let count = 0;
+            document.getElementById("add").addEventListener("click", () => {
+                const n = String((count++ % 12) + 1).padStart(2, "0");
+                const figure = document.createElement("figure");
+                figure.innerHTML = `
+                    <div class="box" data-pg-image-frame>
+                        <img data-pg-image src="images/horse-${n}.jpg" width="800" height="533" alt="" />
+                    </div>
+                    <figcaption>Added · horse-${n}.jpg</figcaption>`;
+                added.append(figure);
+            });
+        </script>
+    </body>
+</html>
