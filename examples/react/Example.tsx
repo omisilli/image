@@ -28,10 +28,13 @@ export function Example() {
             <Images />
 
             <div className="grid gap-4 sm:grid-cols-2">
-                {/* Framed: grey on the frame, the image fades in over it. */}
+                {/* Framed: grey on the frame, the image shows whole once loaded.
+                    data-pg-image-fade="" fades it in (400ms, or --pg-image-fade);
+                    a value is its own, in ms. Leave it out for no fade. */}
                 <div data-pg-image-frame className="aspect-[3/2] overflow-hidden rounded-lg">
                     <img
                         data-pg-image
+                        data-pg-image-fade=""
                         src="/images/horse-01.jpg"
                         width={800}
                         height={533}

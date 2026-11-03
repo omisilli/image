@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>image — example</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v2.0.0/index.css" />
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -184,8 +184,8 @@
             <header>
                 <h1>image</h1>
                 <p>
-                    A grey ground until the image is there, a fade-in inside a frame, and no
-                    broken-image icon when it fails. Loading, sizes and formats stay the
+                    A grey ground until the image is there, a fade-in where you ask for one,
+                    and no broken-image icon when it fails. Loading, sizes and formats stay the
                     browser's: everything below is plain <code>&lt;img&gt;</code> and
                     <code>&lt;picture&gt;</code>.
                 </p>
@@ -195,22 +195,23 @@
                 <h2>Framed and not</h2>
                 <p>
                     In a <code>data-pg-image-frame</code> the grey sits on the frame and the
-                    image fades in over it. Without one the grey sits on the image itself, and
-                    the image appears at once. A failed one keeps its box and its grey; the
-                    address it tried is in <code>data-pg-image-src</code>.
+                    image stays hidden until it has fully loaded, then shows whole — not drawn
+                    top to bottom as it arrives. Without one the grey sits on the image itself,
+                    under it as it arrives. A failed one keeps its box and its grey; the address
+                    it tried is in <code>data-pg-image-src</code>.
                 </p>
                 <div class="grid">
                     <figure>
                         <div class="box" data-pg-image-frame>
                             <img data-pg-image src="images/horse-01.jpg" width="800" height="533" alt="A white horse running" />
                         </div>
-                        <figcaption><b>Framed</b> · fades in</figcaption>
+                        <figcaption><b>Framed</b> · whole, once loaded</figcaption>
                     </figure>
                     <figure>
                         <div class="box">
                             <img data-pg-image src="images/horse-02.jpg" width="800" height="533" alt="A horse under a cloudy sky" />
                         </div>
-                        <figcaption><b>No frame</b> · appears at once</figcaption>
+                        <figcaption><b>No frame</b> · grey underneath</figcaption>
                     </figure>
                     <figure>
                         <div class="box" data-pg-image-frame>
@@ -228,32 +229,32 @@
             </section>
 
             <section>
-                <h2>Fade, per image</h2>
+                <h2>Fade, where asked for</h2>
                 <p>
-                    <code>data-pg-image-fade</code> on the image, in milliseconds.
-                    <code>0</code> shows it at once when loaded, as YouTube's thumbnails do;
-                    without it the page's <code>--pg-image-fade</code> applies, 400ms unless
-                    set.
+                    No fade unless the image asks: a framed image shows at once when loaded,
+                    as YouTube's thumbnails do. A bare <code>data-pg-image-fade</code> fades
+                    it in over the page's <code>--pg-image-fade</code> — 400ms unless set;
+                    with a value it is that image's own, in milliseconds.
                 </p>
                 <button type="button" id="replay">Load them again</button>
                 <div class="grid" id="fades">
                     <figure>
                         <div class="box" data-pg-image-frame>
-                            <img data-pg-image data-pg-image-fade="0" src="images/horse-05.jpg" width="800" height="533" alt="" />
+                            <img data-pg-image src="images/horse-05.jpg" width="800" height="533" alt="" />
                         </div>
-                        <figcaption><code>0</code> · at once</figcaption>
+                        <figcaption>Not set · at once</figcaption>
                     </figure>
                     <figure>
                         <div class="box" data-pg-image-frame>
-                            <img data-pg-image src="images/horse-06.jpg" width="800" height="533" alt="" />
+                            <img data-pg-image data-pg-image-fade src="images/horse-06.jpg" width="800" height="533" alt="" />
                         </div>
-                        <figcaption>None set · 400ms</figcaption>
+                        <figcaption><code>data-pg-image-fade</code> · 400ms</figcaption>
                     </figure>
                     <figure>
                         <div class="box" data-pg-image-frame>
                             <img data-pg-image data-pg-image-fade="1200" src="images/horse-07.jpg" width="800" height="533" alt="" />
                         </div>
-                        <figcaption><code>1200</code> · slow</figcaption>
+                        <figcaption><code>data-pg-image-fade="1200"</code> · slow</figcaption>
                     </figure>
                 </div>
             </section>
@@ -388,11 +389,11 @@
         </main>
 
         <script type="module">
-            import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/dist/index.js";
+            import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v2.0.0/dist/index.js";
 
             initImage();
 
-            // Fresh copies of the three, so each fades in again.
+            // Fresh copies of the three, so each shows again as it did.
             document.getElementById("replay").addEventListener("click", () => {
                 document.querySelectorAll("#fades img").forEach((img) => {
                     const copy = img.cloneNode();
@@ -410,9 +411,9 @@
                 const figure = document.createElement("figure");
                 figure.innerHTML = `
                     <div class="box" data-pg-image-frame>
-                        <img data-pg-image src="images/horse-${n}.jpg" width="800" height="533" alt="" />
+                        <img data-pg-image data-pg-image-fade src="images/horse-${n}.jpg" width="800" height="533" alt="" />
                     </div>
-                    <figcaption>Added · horse-${n}.jpg</figcaption>`;
+                    <figcaption>Added · fades in · horse-${n}.jpg</figcaption>`;
                 added.append(figure);
             });
         </script>

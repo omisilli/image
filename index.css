@@ -1,6 +1,7 @@
 /*
- * image — the CSS half: a grey ground until the image is there, a fade-in
- * inside a frame, and the grey kept when it fails.
+ * image — the CSS half: a grey ground until the image is there, a framed
+ * image shown whole once loaded (faded in where asked for), and the grey
+ * kept when it fails.
  *
  * Variables, set anywhere above the image:
  *   --pg-image-placeholder   the ground. Default: a half-tone grey at 15%
@@ -9,9 +10,11 @@
  *                            colour is made transparent to hide its alt
  *                            text (next/image does that, and so do resets),
  *                            and a share of transparent is transparent.
- *   --pg-image-fade          how long a framed image takes to appear.
- *                            Default 400ms; 0s for none. One image:
- *                            data-pg-image-fade="0" on it, in ms.
+ *   --pg-image-fade          how long a fade takes where one is asked for
+ *                            with a bare data-pg-image-fade. Default 400ms.
+ *
+ * No fade unless the image asks: data-pg-image-fade for the default above,
+ * data-pg-image-fade="800" for its own, in ms.
  *
  * Give the image its size — width/height attributes, or aspect-ratio — so
  * the box, and its ground, are there before the file is.
@@ -22,7 +25,8 @@
     background-color: var(--pg-image-placeholder, rgb(127 127 127 / 0.15));
 }
 
-/* A frame carries the ground itself, so the image can fade in over it. */
+/* A frame carries the ground itself, so the image can be hidden — or fade
+   in — over it. */
 [data-pg-image-frame] {
     background-color: var(--pg-image-placeholder, rgb(127 127 127 / 0.15));
 }
@@ -31,15 +35,22 @@
     background-color: transparent;
 }
 
-/* Hidden until loaded only when JS can say it loaded, and faded only for
-   users who have not asked for less motion. */
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+/* Hidden until loaded only when JS can say it loaded: the grey shows, then
+   the whole image at once, not drawn top to bottom as it arrives. */
+@media (scripting: enabled) {
     [data-pg-image-frame] [data-pg-image] {
         opacity: 0;
-        transition: opacity var(--pg-image-fade, 400ms) ease;
     }
 
     [data-pg-image-frame] [data-pg-image-state="loaded"] {
         opacity: 1;
+    }
+}
+
+/* A fade only where asked for, and only for users who have not asked for
+   less motion. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-pg-image-frame] [data-pg-image-fade] {
+        transition: opacity var(--pg-image-fade, 400ms) ease;
     }
 }

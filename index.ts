@@ -6,14 +6,16 @@
  *
  * Writes the image's state to data-pg-image-state: "loaded" or "error"
  * (no attribute yet: still loading). index.css shows a grey ground until
- * then, fades the image in inside a data-pg-image-frame, and keeps the grey
- * when it fails.
+ * then, shows a framed image (data-pg-image-frame) whole once it is loaded,
+ * and keeps the grey when it fails.
  *
  * On error the image is swapped for an empty one, so its box and grey
  * ground stay and the browser draws no broken-image icon or alt text. The
  * address it tried is kept in data-pg-image-src.
  *
- * data-pg-image-fade="0" on an image sets its own fade, in ms — 0 for none.
+ * No fade unless asked for: data-pg-image-fade on a framed image fades it
+ * in over --pg-image-fade (400ms); data-pg-image-fade="800" sets its own, in
+ * ms.
  *
  * Lazy loading, sizes, formats: not here. The browser (loading="lazy",
  * srcset, <picture>) or next/image does those.
@@ -44,8 +46,11 @@ function markLoaded(img: HTMLImageElement): void {
     if (isStandIn(img)) return;
     // Read here, not at start: it covers images added later too, and the
     // duration is in place in the same step the fade begins.
+    // A bare attribute (or JSX's "true") leaves the default to CSS.
     const fade = img.getAttribute(FADE);
-    if (fade) img.style.setProperty("--pg-image-fade", `${fade}ms`);
+    if (fade && Number.isFinite(Number(fade))) {
+        img.style.setProperty("--pg-image-fade", `${fade}ms`);
+    }
     img.setAttribute(STATE, "loaded");
 }
 

@@ -1,8 +1,8 @@
 # image
 
 What neither the browser nor next/image does for an image: a grey ground
-until it is there, a fade-in inside a frame, and no broken-image icon when
-it fails. One script, one stylesheet, no dependencies, framework-agnostic.
+until it is there, a framed image shown whole once loaded — faded in where
+you ask for it — and no broken-image icon when it fails. One script, one stylesheet, no dependencies, framework-agnostic.
 
 ```html
 <div data-pg-image-frame style="aspect-ratio: 3 / 2; overflow: hidden">
@@ -12,7 +12,7 @@ it fails. One script, one stylesheet, no dependencies, framework-agnostic.
 ```
 
 ```sh
-npm install github:omisilli/image#v1.1.0
+npm install github:omisilli/image#v2.0.0
 ```
 
 ```ts
@@ -34,16 +34,16 @@ Load both halves straight from jsDelivr — no install, and the page works
 when opened by double-clicking:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/image@v2.0.0/index.css" />
 
 <script type="module">
-    import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v1.1.0/dist/index.js";
+    import { initImage } from "https://cdn.jsdelivr.net/gh/omisilli/image@v2.0.0/dist/index.js";
 
     initImage();
 </script>
 ```
 
-Pin the version (`@v1.1.0`) on a live site. A pinned URL never changes;
+Pin the version (`@v2.0.0`) on a live site. A pinned URL never changes;
 `@1` follows the newest 1.x release.
 
 ## Who does what
@@ -62,7 +62,7 @@ browser, or in next/image — this package does not do it again.
 | Long caching                           | Next's image server                           | the server's headers                                |
 | A blurred preview                      | `placeholder="blur"`                          | the server's small preview as a background          |
 | **Grey ground while loading**          | **this package**                              | **this package**                                    |
-| **Fade-in when loaded**                | **this package**                              | **this package**                                    |
+| **Shown whole, or faded in, when loaded** | **this package**                            | **this package**                                    |
 | **No broken icon, box kept on error**  | **this package**                              | **this package**                                    |
 | **State to style: loading / loaded / error** | **this package**                        | **this package**                                    |
 
@@ -71,7 +71,7 @@ browser, or in next/image — this package does not do it again.
 |                                     | Browser                                | next/image                                        | image                                            |
 | ----------------------------------- | -------------------------------------- | ------------------------------------------------- | ------------------------------------------------ |
 | Grey ground until loaded            | —                                      | only with `placeholder`, needs a preview image    | ✓ any image, no preview needed                   |
-| Fade-in                             | —                                      | —                                                 | ✓ inside a frame                                 |
+| Fade-in                             | —                                      | —                                                 | ✓ inside a frame, where asked for                |
 | On error                            | broken icon and alt text               | the same                                          | ✓ the empty box and its grey stay                |
 | The address that failed             | —                                      | —                                                 | ✓ `data-pg-image-src`                            |
 | State in the markup                 | — (`complete` in JS only)              | `onLoad` / `onError` — Client Components only     | ✓ `data-pg-image-state`, from a Server Component |
@@ -82,7 +82,7 @@ browser, or in next/image — this package does not do it again.
 | File              | For                                                              |
 | ----------------- | ---------------------------------------------------------------- |
 | `index.ts`        | TypeScript source — import it directly in a TS / bundler project |
-| `index.css`       | The CSS half: the grey ground and the fade                       |
+| `index.css`       | The CSS half: the grey ground, hiding until loaded, the fade     |
 | `dist/index.js`   | Compiled ES module — plain HTML, no build step                   |
 | `dist/index.d.ts` | Types for `dist/index.js`                                        |
 
@@ -100,18 +100,21 @@ npx -p typescript tsc index.ts --outDir dist --declaration --target es2020 --mod
 | Attribute              | On                 | Meaning                                                        |
 | ---------------------- | ------------------ | -------------------------------------------------------------- |
 | `data-pg-image`        | `<img>`            | Watch this image                                               |
-| `data-pg-image-frame`  | a wrapper          | Carries the grey; the image inside fades in over it            |
+| `data-pg-image-frame`  | a wrapper          | Carries the grey; the image inside shows once loaded           |
 | `data-pg-image-state`  | `<img>`            | `"loaded"` or `"error"`, written by image. None yet: loading   |
 | `data-pg-image-src`    | `<img>`            | On error: the address it tried, written by image               |
-| `data-pg-image-fade`   | `<img>`            | This image's fade, in ms. `0`: at once. Optional               |
+| `data-pg-image-fade`   | framed `<img>`     | Fade in when loaded. Bare: `--pg-image-fade`; a value: its own, in ms |
 
-Each image can fade at its own pace — or not at all, as YouTube's
-thumbnails do: hidden until loaded, then shown at once.
+No fade unless an image asks for one. Without the attribute a framed image
+is hidden until loaded, then shown at once — as YouTube's thumbnails do:
 
 ```html
-<div data-pg-image-frame><img data-pg-image data-pg-image-fade="0" …></div>
-<div data-pg-image-frame><img data-pg-image data-pg-image-fade="1200" …></div>
+<div data-pg-image-frame><img data-pg-image …></div>                          <!-- at once -->
+<div data-pg-image-frame><img data-pg-image data-pg-image-fade …></div>       <!-- 400ms -->
+<div data-pg-image-frame><img data-pg-image data-pg-image-fade="1200" …></div> <!-- 1200ms -->
 ```
+
+In JSX a bare attribute is `data-pg-image-fade=""`.
 
 Style anything on the state — a caption over failed images, say:
 
@@ -125,9 +128,10 @@ figure:has([data-pg-image-state="error"]) figcaption::after {
 
 - **Loading:** a grey ground, on the frame or, without one, on the image
   itself.
-- **Loaded:** the grey goes; a framed image fades in over its frame. An
-  image without a frame appears at once — fading it would fade its own
-  grey with it.
+- **Loaded:** the grey goes. A framed image, hidden until now, shows whole
+  — at once, or fading in with `data-pg-image-fade`. An image without a
+  frame is drawn over its grey as it arrives, and is never faded: fading
+  it would fade its own grey with it.
 - **Failed:** the image is swapped for an empty one, so its box and grey
   stay and the browser draws no broken icon and no alt text. Inside a
   `<picture>` the `<source>`s are cleared too — the browser does not fall
@@ -148,10 +152,10 @@ fade. With reduced motion asked for, framed images appear without fading.
 | Variable                 | Default                     | Meaning                                    |
 | ------------------------ | --------------------------- | ------------------------------------------ |
 | `--pg-image-placeholder` | `rgb(127 127 127 / 0.15)`   | The ground — suits light and dark themes   |
-| `--pg-image-fade`        | `400ms`                     | How long a framed image takes; `0s` for none |
+| `--pg-image-fade`        | `400ms`                     | The fade of a bare `data-pg-image-fade`    |
 
 Set them anywhere above the image — on `:root` for the whole site, on a
-section for its images. `data-pg-image-fade` on an image wins over
+section for its images. A value on `data-pg-image-fade` wins over
 `--pg-image-fade`.
 
 The ground is not the text colour on
