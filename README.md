@@ -77,6 +77,29 @@ browser, or in next/image — this package does not do it again.
 | State in the markup                 | — (`complete` in JS only)              | `onLoad` / `onError` — Client Components only     | ✓ `data-pg-image-state`, from a Server Component |
 | Images added later                  | —                                      | —                                                 | ✓ one listener on `document`                     |
 
+### Before the data: skeleton
+
+This package starts once an `<img>` is on the page — its address known,
+its file on the way. Before that, when the page is open but the list it
+shows is still being fetched, there is no `<img>` yet, and nothing here
+draws anything: the space is simply empty.
+
+[skeleton](https://github.com/omisilli/skeleton) fills that first wait
+with grey stand-ins for the whole card — cover, avatar, title lines.
+Install it first if a page fetches its content; then, one after the
+other:
+
+1. **skeleton** — no data yet: grey cards.
+2. The data arrives; the real cards, with their `<img data-pg-image>`,
+   replace the skeleton.
+3. **image** — each file still downloading: the same grey, under the
+   picture, until it is there.
+
+Both greys are the same half-tone, so the hand-over is not seen. Without
+skeleton, image works just the same — only step 1 is an empty space. A
+page whose content comes in the HTML (server-rendered, static) has no step
+1 and needs only this package.
+
 ## Files
 
 | File              | For                                                              |
