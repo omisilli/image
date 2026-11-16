@@ -259,18 +259,23 @@ import Image from "next/image";
 import horse from "./horse.jpg";
 
 <div data-pg-image-frame className="aspect-[3/2] overflow-hidden">
-    <Image data-pg-image src={horse} alt="…" sizes="(width >= 64rem) 33vw, 100vw"
-           className="h-full w-full object-cover" />
+    <Image data-pg-image suppressHydrationWarning src={horse} alt="…"
+           sizes="(width >= 64rem) 33vw, 100vw" className="h-full w-full object-cover" />
 </div>
 ```
 
 If `initImage` is called again before the first cleanup runs (React
 remounting in development), only the newest call answers.
 
-One thing to know: when an image fails **before React has hydrated** the
-page, image has already swapped its `src`, and React in development may
-warn that an attribute differs from the server's. Only a development
-warning; nothing breaks.
+**`suppressHydrationWarning` on each image.** image writes
+`data-pg-image-state` the moment an image loads — and an image can load
+before React has hydrated it: one in a `<Suspense>` boundary that streams
+in later, one from the browser's cache. React, in development, then
+reports the attribute it did not render as a mismatch; on a failure, the
+swapped `src` too. Only a warning, and only in development — nothing
+breaks, and production says nothing — but `suppressHydrationWarning`
+keeps the console clean. next/image passes it on to its `<img>`. The
+stories package asks the same of its buttons, for the same reason.
 
 See [`examples/react/Example.tsx`](examples/react/Example.tsx). A plain HTML
 version, with every case above, is in

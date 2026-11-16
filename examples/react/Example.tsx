@@ -18,9 +18,12 @@ export function Images() {
      import horse from "./horse.jpg";
 
      <div data-pg-image-frame className="aspect-[3/2] overflow-hidden rounded-lg">
-         <Image data-pg-image src={horse} alt="…" sizes="(width >= 64rem) 33vw, 100vw"
-                className="h-full w-full object-cover" />
+         <Image data-pg-image suppressHydrationWarning src={horse} alt="…"
+                sizes="(width >= 64rem) 33vw, 100vw" className="h-full w-full object-cover" />
      </div>
+
+   suppressHydrationWarning: image writes data-pg-image-state as soon as an
+   image loads — before React hydrates it, if it loads first.
 */
 export function Example() {
     return (
@@ -34,6 +37,7 @@ export function Example() {
                 <div data-pg-image-frame className="aspect-[3/2] overflow-hidden rounded-lg">
                     <img
                         data-pg-image
+                        suppressHydrationWarning
                         data-pg-image-fade=""
                         src="/images/horse-01.jpg"
                         width={800}
@@ -47,6 +51,7 @@ export function Example() {
                     the browser fetches it when it comes near. */}
                 <img
                     data-pg-image
+                    suppressHydrationWarning
                     loading="lazy"
                     src="/images/horse-02.jpg"
                     width={800}
@@ -60,6 +65,7 @@ export function Example() {
                 <div data-pg-image-frame className="aspect-[3/2] overflow-hidden rounded-lg">
                     <img
                         data-pg-image
+                        suppressHydrationWarning
                         src="/images/missing.jpg"
                         width={800}
                         height={533}
